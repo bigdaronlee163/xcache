@@ -384,6 +384,7 @@ void PikaClientConn::AsynProcessRedisCmds(const std::vector<pink::RedisCmdArgsTy
 	*/
 	std::string opt = argvs[0][0];
 	slash::StringToLower(opt);
+	// 判断优先级。
 	int priority = g_pika_conf->is_slow_cmd(opt) ? THREADPOOL_SLOW : THREADPOOL_FAST;
 	arg->queue_size = g_pika_server->GetThreadPoolTasks(priority);
 	g_pika_server->Schedule(&DoBackgroundTask, arg, priority);
