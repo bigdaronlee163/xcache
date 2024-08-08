@@ -17,6 +17,7 @@ class StringsValue : public InternalValue {
   explicit StringsValue(const Slice& user_value) :
     InternalValue(user_value) {
   }
+  // 返回数据的总长度。 包括用户数据和时间戳。
   size_t AppendTimestampAndVersion() override {
     size_t usize = user_value_.size();
     char* dst = start_;

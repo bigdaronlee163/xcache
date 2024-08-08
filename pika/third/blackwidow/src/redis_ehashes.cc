@@ -170,6 +170,7 @@ Status RedisEhashes::Ehset(const Slice& key, const Slice& field, const Slice& va
             parsed_hashes_meta_value.ModifyCount(1);
             batch.Put(handles_[0], key, meta_value);
             HashesDataKey data_key(key, version, field);
+            // value是重新定义的。
             EhashesValue ehashes_value(value);
             batch.Put(handles_[1], data_key.Encode(), ehashes_value.Encode());
         } else {
@@ -389,6 +390,7 @@ int32_t RedisEhashes::Ehexpire(const Slice& key, const Slice& field, int32_t ttl
     const rocksdb::Snapshot* snapshot;
     ScopeSnapshot ss(db_, &snapshot);
     read_options.snapshot = snapshot;
+    // 这里的meta key 没有使用 cf . 
     Status s = db_->Get(read_options, handles_[0], key, &meta_value);
     if (s.ok()) {
         ParsedHashesMetaValue parsed_hashes_meta_value(&meta_value);
@@ -397,6 +399,7 @@ int32_t RedisEhashes::Ehexpire(const Slice& key, const Slice& field, int32_t ttl
             return 0;
         } else {
             version = parsed_hashes_meta_value.version();
+            // 
             HashesDataKey data_key(key, version, field);
             std::string data_value;
             s = db_->Get(read_options, handles_[1], data_key.Encode(), &data_value);
